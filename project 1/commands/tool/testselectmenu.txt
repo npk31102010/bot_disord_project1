@@ -1,0 +1,74 @@
+const {
+    StringSelectMenuBuilder,
+    StringSelectMenuOptionBuilder,
+    ActionRowBuilder,
+    ComponentType,
+    SlashCommandBuilder,
+    EmbedBuilder
+}
+= require('discord.js');
+
+const data = {
+    name: 'menu',
+    description: 'Thực đơn'
+};
+
+
+module.exports = {
+    data: new SlashCommandBuilder()
+    .setName(data.name)
+    .setDescription(data.description),
+    async execute(interaction, client){
+        const select = [
+            {
+                name: "Chó",
+                description: 'Đây Là Chó!',
+                value: 'Ban đã chọn chó!',
+                emoji: '🐶'
+            },
+            {
+                name: 'Mèo',
+                description: 'Đây là mèo',
+                value: 'Bạn đã chọn mèo!',
+                emoji: '🐺'
+            }
+        ]
+        const menu = new StringSelectMenuBuilder()
+        .setCustomId(interaction.id)
+        .setPlaceholder('Menu')
+        .setMinValues(0)
+        .setMaxValues(select.length)
+        .addOptions(
+            new StringSelectMenuOptionBuilder()
+            .setLabel(select[0].name)
+            .setDescription(select[0].description)
+            .setValue(select[0].value)
+            .setEmoji(select[0].emoji),
+            new StringSelectMenuOptionBuilder()
+            .setLabel(select[1].name)
+            .setDescription(select[1].description)
+            .setValue(select[1].value)
+            .setEmoji(select[1].emoji),
+        );
+        const actionRow  = new ActionRowBuilder().addComponents(menu);
+
+        const reply = await interaction.reply({
+            components: [actionRow]
+        })
+
+        const collector = reply.createMessageComponentCollector({
+            componentType: ComponentType.StringSelect,
+            filter: (i) => i.user.id === interaction.user.id && i.customId === interaction.id,
+            time: 60_000,
+        });
+
+        collector.on('collect', ( interaction )=>{
+            console.log(interaction.values);
+            if (!interaction.values.length){
+                interaction.reply('You Have Emptied your selection');
+            }
+            interaction.reply(`${interaction.values}`);
+        });
+
+    }
+}

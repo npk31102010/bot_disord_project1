@@ -1,0 +1,30 @@
+const { SlashCommandBuilder, EmbedBuilder, SlashCommandNumberOption } = require('discord.js');
+const User = require('../../events/User/user');
+
+const allSharesName = ['apple', 'alphabet', 'microsoft', 'amazon', 'meta', 'tesla'];
+const allSharesCode = ['appl', 'googl', 'msft', 'amzn', 'meta', 'tsla'];
+
+allSharesCode.forEach(code => {
+    allSharesName.forEach(shares => {
+        module.exports = {
+            data: new SlashCommandBuilder()
+            .setName('cp-' + code)
+            .setDescription(`Đầu tư cổ phiếu của ${shares}`)
+            .addNumberOption(options => options
+                .setName('vnd')
+                .setDescription('Số tiền đàu tư vào cổ phiếu')
+                .setRequired(true)
+            ),
+            async execute(interaction) {
+                const user = await new User.findOne({ userId: interaction.member.id });
+                const cashOptions = interaction.options.getNumber('vnd');
+
+                
+
+
+
+
+            }
+        }
+    })
+})
